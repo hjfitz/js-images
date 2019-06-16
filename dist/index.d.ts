@@ -1,8 +1,7 @@
-interface IDetails {
-    height?: number;
-    width?: number;
-    quality?: number;
-    dom?: boolean;
-}
-export declare function resize(url: string, details: IDetails): Promise<string>;
-export {};
+import { IModifyOptions } from "./interfaces";
+/**
+ *
+ * @param img image element or url (normal ot base64)
+ * @param opts image modification options
+ */
+export default function polyModify(img: string | HTMLInputElement, opts: IModifyOptions): Promise<string | HTMLImageElement | File>;

@@ -35,25 +35,104 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-function resize(url, details) {
-    var _this = this;
-    // load the image in to a new temporary image
-    var img = new Image();
-    var canvas = document.createElement('canvas');
-    var ctx = canvas.getContext('2d');
-    if (!ctx)
-        return Promise.reject('Unable to render canvas');
-    img.src = url;
-    // on image load, perform the action. This is why we return a promise
-    return new Promise(function (res, rej) {
-        img.onload = function () { return __awaiter(_this, void 0, void 0, function () {
-            var width, height;
-            return __generator(this, function (_a) {
-                width = img.width, height = img.height;
-                return [2 /*return*/];
-            });
-        }); };
+var util_1 = require("./util");
+/**
+ * resize and compress a given image
+ * @param imgUrl image url to modify
+ * @param opts options for new image
+ */
+function modify(imgUrl, opts) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _a, img, height, width, canvas, ctx, newImg, scalingFactor, newWidth, scalingFactor, newHeight;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
+                case 0: return [4 /*yield*/, util_1.getImgDims(imgUrl)];
+                case 1:
+                    _a = _b.sent(), img = _a.img, height = _a.height, width = _a.width;
+                    canvas = document.createElement('canvas');
+                    ctx = canvas.getContext('2d');
+                    if (!ctx)
+                        return [2 /*return*/, Promise.reject('oof')
+                            // scale to height and width
+                        ];
+                    // scale to height and width
+                    if (opts.height && opts.width) {
+                        ctx.drawImage(img, 0, 0, opts.height, opts.width);
+                    }
+                    // scale (proportioanlly to height)
+                    if (opts.height && !opts.width) {
+                        scalingFactor = height / opts.height;
+                        newWidth = width / scalingFactor;
+                        ctx.drawImage(img, 0, 0, opts.height, newWidth);
+                    }
+                    // scale (proportionally to width)
+                    if (!opts.height && opts.width) {
+                        scalingFactor = width / opts.width;
+                        newHeight = height / scalingFactor;
+                        ctx.drawImage(img, 0, 0, newHeight, opts.width);
+                    }
+                    // change quality
+                    if (opts.quality && opts.quality <= 1 && opts.quality >= 0) {
+                        newImg = canvas.toDataURL('image/jpeg', opts.quality);
+                    }
+                    else {
+                        newImg = canvas.toDataURL('image/png');
+                    }
+                    return [2 /*return*/, new Promise(function (res, rej) {
+                            // return <img> or just a b64 url
+                            if (opts.format === 'dom') {
+                                var elem_1 = document.createElement('img');
+                                elem_1.src = newImg;
+                                elem_1.onload = function () { return res(elem_1); };
+                                elem_1.onerror = rej;
+                            }
+                            else if (opts.format === 'file') {
+                                // make file
+                                canvas.toBlob(function (blobFile) {
+                                    if (!blobFile)
+                                        return rej('unable to convert image to file');
+                                    var imgFile = new File([blobFile], 'created with js-images');
+                                    res(imgFile);
+                                });
+                            }
+                            else {
+                                res(newImg);
+                            }
+                        })];
+            }
+        });
     });
 }
-exports.resize = resize;
+/**
+ *
+ * @param img image element or url (normal ot base64)
+ * @param opts image modification options
+ */
+function polyModify(img, opts) {
+    return __awaiter(this, void 0, void 0, function () {
+        var b64Img;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    // if nothing, die
+                    if (!img)
+                        return [2 /*return*/, Promise.reject('no image given')];
+                    if (!(img instanceof HTMLInputElement && img.files)) return [3 /*break*/, 2];
+                    return [4 /*yield*/, util_1.blobToB64(img.files[0])];
+                case 1:
+                    b64Img = _a.sent();
+                    if (typeof b64Img === 'string')
+                        return [2 /*return*/, modify(b64Img, opts)];
+                    _a.label = 2;
+                case 2:
+                    // if string, well done! 
+                    if (typeof img === 'string') {
+                        return [2 /*return*/, modify(img, opts)];
+                    }
+                    return [2 /*return*/, Promise.reject('should not get here')];
+            }
+        });
+    });
+}
+exports.default = polyModify;
 //# sourceMappingURL=index.js.map

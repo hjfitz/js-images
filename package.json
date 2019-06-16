@@ -2,5 +2,8 @@
   "devDependencies": {
     "tsc": "^1.20150623.0",
     "typescript": "^3.5.1"
+  },
+  "scripts": {
+    "build": " rm dist/**; tsc"
   }
 }
