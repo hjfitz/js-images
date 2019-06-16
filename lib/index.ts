@@ -1,36 +1,11 @@
-interface IModifyOptions {
-	height?: number;
-	width?: number;
-	quality?: number;
-	dom?: boolean;
-}
+import {IModifyOptions, IImageRender} from "./interfaces";
+import {getImgDims, blobToB64} from "./util";
 
-interface IImageRender {
-	height: number;
-	width: number;
-	img: HTMLImageElement;
-}
-
-function getImgDims(url: string): Promise<IImageRender> {
-	const img: HTMLImageElement = new Image()
-	img.src = url
-	return new Promise((res) => {
-		img.onload = function onload() {
-			const {width, height} = img
-			res({img, width, height})
-		}
-	})
-}
-
-function blobToB64(img: File): Promise<string | ArrayBuffer | null> {
-	const reader = new FileReader()
-	return new Promise((res, rej) => {
-		reader.addEventListener('load', () => res(reader.result), false)
-		reader.readAsDataURL(img)
-		reader.onerror = rej
-	})
-}
-
+/**
+ * resize and compress a given image
+ * @param imgUrl image url to modify
+ * @param opts options for new image
+ */
 async function modify(imgUrl: string, opts: IModifyOptions): Promise<string|HTMLImageElement> {
 	const {img, height, width}: IImageRender = await getImgDims(imgUrl)
 	const canvas: HTMLCanvasElement = document.createElement('canvas')
@@ -40,7 +15,6 @@ async function modify(imgUrl: string, opts: IModifyOptions): Promise<string|HTML
 	// scale to height and width
 	if (opts.height && opts.width) {
 		ctx.drawImage(img, 0, 0, opts.height, opts.width)
-		// canvas.toDataURL('image/jpeg', 0.8)
 	}
 
 	// scale (proportioanlly to height)
@@ -70,13 +44,18 @@ async function modify(imgUrl: string, opts: IModifyOptions): Promise<string|HTML
 			const elem: HTMLImageElement = document.createElement('img')
 			elem.src = newImg
 			elem.onload = () => res(elem)
+			elem.onerror = rej
 		} else {
 			res(newImg)
 		}
 	})
 }
 
-// yay for polymorphism
+/**
+ * 
+ * @param img image element or url (normal ot base64)
+ * @param opts image modification options
+ */
 export default async function polyModify(img: string | HTMLInputElement, opts: IModifyOptions): Promise<string|HTMLImageElement> {
 	// if nothing, die
 	if (!img) return Promise.reject('no image given');
