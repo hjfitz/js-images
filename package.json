@@ -1,4 +1,11 @@
 {
+  "name": "js-images",
+  "version": "1.0.1",
+  "description": "[Dependency free] Compress and resize images within the DOM",
+  "main": "dist/index.js",
+  "repository": "https://github.com/hjfitz/js-images",
+  "author": "Harry <hfitz83@gmail.com>",
+  "license": "MIT",
   "devDependencies": {
     "tsc": "^1.20150623.0",
     "typescript": "^3.5.1"
