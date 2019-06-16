@@ -2,7 +2,7 @@ export interface IModifyOptions {
 	height?: number;
 	width?: number;
 	quality?: number;
-	dom?: boolean;
+	format?: string;
 }
 
 export interface IImageRender {

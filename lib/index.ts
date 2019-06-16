@@ -6,7 +6,7 @@ import {getImgDims, blobToB64} from "./util";
  * @param imgUrl image url to modify
  * @param opts options for new image
  */
-async function modify(imgUrl: string, opts: IModifyOptions): Promise<string|HTMLImageElement> {
+async function modify(imgUrl: string, opts: IModifyOptions): Promise<string|HTMLImageElement|File> {
 	const {img, height, width}: IImageRender = await getImgDims(imgUrl)
 	const canvas: HTMLCanvasElement = document.createElement('canvas')
 	const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d')
@@ -40,11 +40,18 @@ async function modify(imgUrl: string, opts: IModifyOptions): Promise<string|HTML
 
 	return new Promise((res, rej) => {
 		// return <img> or just a b64 url
-		if (opts.dom) {
+		if (opts.format === 'dom') {
 			const elem: HTMLImageElement = document.createElement('img')
 			elem.src = newImg
 			elem.onload = () => res(elem)
 			elem.onerror = rej
+		} else if (opts.format === 'file') {
+			// make file
+			canvas.toBlob((blobFile) => {
+				if (!blobFile) return rej('unable to convert image to file')
+				const imgFile: File = new File([blobFile], 'created with js-images')
+				res(imgFile)
+			})
 		} else {
 			res(newImg)
 		}
@@ -56,7 +63,7 @@ async function modify(imgUrl: string, opts: IModifyOptions): Promise<string|HTML
  * @param img image element or url (normal ot base64)
  * @param opts image modification options
  */
-export default async function polyModify(img: string | HTMLInputElement, opts: IModifyOptions): Promise<string|HTMLImageElement> {
+export default async function polyModify(img: string | HTMLInputElement, opts: IModifyOptions): Promise<string|HTMLImageElement|File> {
 	// if nothing, die
 	if (!img) return Promise.reject('no image given');
 
