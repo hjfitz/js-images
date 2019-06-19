@@ -2,9 +2,14 @@
 > Resize and compress images within the web browser
 
 ## Usage
+
+Firstly, install!
+```zsh
+yarn add js-images
+```
 ### With a URL
 ```ts
-import modify from 'libraryname'
+import modify from 'js-images'
 
 const resizedImage: HTMLImageElement = await modify(`https://placeimg.com/640/480/any`, {
 	height: 480,
@@ -16,6 +21,8 @@ document.body.appendChild(reizedImage)
 ```
 ### From a File Input
 ```ts
+import modify from 'js-images'
+
 const inp: HTMLInputElement = document.querySelector('input[type=file]')
 
 // get our image from the input
