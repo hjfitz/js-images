@@ -1,4 +1,4 @@
-import {IImageRender} from './interfaces'
+import {IImageRender} from "./interfaces"
 
 /**
  * get height, width and HTMLImageElement instance for a given image URL
@@ -22,7 +22,7 @@ export function getImgDims(url: string): Promise<IImageRender> {
 export function blobToB64(img: File): Promise<string | ArrayBuffer | null> {
 	const reader = new FileReader()
 	return new Promise((res, rej) => {
-		reader.addEventListener('load', () => res(reader.result), false)
+		reader.addEventListener("load", () => res(reader.result), false)
 		reader.readAsDataURL(img)
 		reader.onerror = rej
 	})

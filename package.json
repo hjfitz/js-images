@@ -8,6 +8,7 @@
   "license": "MIT",
   "devDependencies": {
     "tsc": "^1.20150623.0",
+    "tslint": "^5.17.0",
     "typescript": "^3.5.1"
   },
   "scripts": {
