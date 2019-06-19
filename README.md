@@ -1,12 +1,13 @@
 # js-images
 > Resize and compress images within the web browser
 
-## Usage
-
-### Install
+## Install
 ```zsh
 yarn add js-images
 ```
+
+## Usage
+
 ### With a URL
 ```ts
 import modify from 'js-images'
@@ -45,7 +46,7 @@ inp.addEventListner('change', async (ev) => {
 })
 ```
 
-**Note: top-level await does not work in the browser! these should be wrapped in an anonymous IIFE (removed for brevity, in this example)**
+**Note: top-level await does not work in the browser! these should be wrapped in an async IIFE.**
 
 ## API
 js-images returns either a HTMLImageElement of the desired image, a base64 encoded image, or a raw File. It takes either an image URL or HTMLFileInput element as the first argument.
