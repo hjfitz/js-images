@@ -3,7 +3,7 @@
 
 ## Usage
 
-Firstly, install!
+### Install
 ```zsh
 yarn add js-images
 ```
@@ -22,6 +22,7 @@ document.body.appendChild(reizedImage)
 ### From a File Input
 ```ts
 import modify from 'js-images'
+import axios from 'axios'
 
 const inp: HTMLInputElement = document.querySelector('input[type=file]')
 
@@ -30,6 +31,18 @@ const compressedImageAsFile: File = await modify(inp, {quality: 0.5, format: 'fi
 
 // send it to the server!
 await axios.post('/api/image', compressedImageAsFile)
+```
+
+### From a File Event
+```ts
+import modify from 'js-images'
+
+const inp: HTMLInputElement = document.querySelector('input[type=file]')
+
+inp.addEventListner('change', async (ev) => {
+	const imgB64 = await modify(ev.target, {quality: 0.8})
+	const {data: resp} = await axios.post('/api/image', {imgB64})
+})
 ```
 
 **Note: top-level await does not work in the browser! these should be wrapped in an anonymous IIFE (removed for brevity, in this example)**
